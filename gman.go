@@ -107,6 +107,13 @@ func getReadMe(r repo) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if resp.StatusCode==404{
+		var url = "https://raw.githubusercontent.com/" + r.FullName + "/" + r.DefaultBranch + "/README.markdown"
+		resp, err = http.Get(url)
+		if err != nil {
+			return "", err
+		}
+	}
 	if resp.StatusCode != 200 {
 		return "", errors.New(resp.Status)
 	}
