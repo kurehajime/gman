@@ -13,8 +13,8 @@ var (
 )
 
 func main() {
-	flag.BoolVar(&open, "o", false, "open web browser")
-	flag.BoolVar(&list, "l", false, "list  repository")
+	flag.BoolVar(&open, "o", false, "Open web browser")
+	flag.BoolVar(&list, "l", false, "List  repository")
 	flag.Parse()
 	if len(flag.Args()) == 0 {
 		return
@@ -25,7 +25,7 @@ func main() {
 	var err error
 	switch true {
 	case open == true:
-		res,err = OpenRepo(text)
+		res, err = OpenRepo(text)
 	case list == true:
 		res, err = ShowList(text)
 	default:
@@ -35,6 +35,5 @@ func main() {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	fmt.Println(res)
-
+	fmt.Print(res)
 }

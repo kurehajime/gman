@@ -12,6 +12,7 @@ import (
 	"strings"
 )
 
+//Github API JSON :Search
 type searchResult struct {
 	TotalCount int `json:"total_count"`
 	Items      []struct {
@@ -19,6 +20,8 @@ type searchResult struct {
 		FullName string `json:"full_name"`
 	} `json:"items"`
 }
+
+//Github API JSON:Repository
 type repo struct {
 	Name          string `json:"name"`
 	FullName      string `json:"full_name"`
@@ -27,6 +30,7 @@ type repo struct {
 	HtmlUrl       string `json:"html_url"`
 }
 
+//Get readme.md
 func Gman(text string) (string, error) {
 	r, err := selRepo(text)
 	if err != nil {
@@ -34,13 +38,14 @@ func Gman(text string) (string, error) {
 	}
 	return getReadMe(r)
 }
-func OpenRepo(text string) (string,error) {
+
+//Open repository
+func OpenRepo(text string) (string, error) {
 	r, err := selRepo(text)
 	if err != nil {
-		return "",err
+		return "", err
 	}
-	url:=r.HtmlUrl
-	//open web browser
+	url := r.HtmlUrl
 	switch runtime.GOOS {
 	case "linux":
 		exec.Command("xdg-open", url).Start()
@@ -48,9 +53,11 @@ func OpenRepo(text string) (string,error) {
 		exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
 	case "darwin":
 		exec.Command("open", url).Start()
-	}	
-	return r.HtmlUrl,nil
+	}
+	return r.HtmlUrl, nil
 }
+
+//Show repository list
 func ShowList(text string) (string, error) {
 	var rtnStr string
 	res, err := getRepoList(text)
@@ -58,10 +65,14 @@ func ShowList(text string) (string, error) {
 		return "", err
 	}
 	for i := 0; i < len(res.Items); i++ {
-		rtnStr += res.Items[i].FullName+"\n"
+		if strings.ToUpper(res.Items[i].Name) == strings.ToUpper(text) {
+			rtnStr += res.Items[i].FullName + "\n"
+		}
 	}
 	return rtnStr, nil
 }
+
+//Search and  select a repository
 func selRepo(text string) (repo, error) {
 	var full_name string
 	var r repo
@@ -89,6 +100,7 @@ func selRepo(text string) (repo, error) {
 	return r, nil
 }
 
+//Get readme.md
 func getReadMe(r repo) (string, error) {
 	var url = "https://raw.githubusercontent.com/" + r.FullName + "/" + r.DefaultBranch + "/README.md"
 	resp, err := http.Get(url)
@@ -104,6 +116,8 @@ func getReadMe(r repo) (string, error) {
 	}
 	return string(readme), nil
 }
+
+//Get repository   list struct
 func getRepoList(text string) (searchResult, error) {
 	var gURL string = "https://api.github.com/search/repositories?q="
 	var res searchResult
@@ -118,6 +132,8 @@ func getRepoList(text string) (searchResult, error) {
 	}
 	return res, nil
 }
+
+//Get  repository info struct
 func getRepo(full_name string) (repo, error) {
 	var gURL string = "https://api.github.com/repos/"
 	var res repo
