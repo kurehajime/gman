@@ -29,6 +29,6 @@ or
 Build (Go lang).
 
 ```
-go get -u github.com/kurehajime/gman
+go install github.com/kurehajime/gman@latest
 ```
 
